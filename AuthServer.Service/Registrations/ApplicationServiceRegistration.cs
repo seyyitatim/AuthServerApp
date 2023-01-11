@@ -19,29 +19,15 @@ namespace AuthServer.Service.Registrations
 {
     public static class ApplicationServiceRegistration
     {
-        public static IServiceCollection AddApplicationService(this IServiceCollection services,
-                                                                IConfiguration configuration)
+        public static IServiceCollection AddApplicationService(this IServiceCollection services)
         {
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped(typeof(IServiceGeneric<,>), typeof(ServiceGeneric<,>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
 
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("SqlServer"), sqlOptions =>
-                {
-                    sqlOptions.MigrationsAssembly("AuthServer.Data");
-                });
-            });
-
-            services.AddIdentity<UserApp, IdentityRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-                options.Password.RequireNonAlphanumeric = false;
-            }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
             return services;
         } 

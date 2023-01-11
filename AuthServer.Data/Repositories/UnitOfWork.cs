@@ -1,4 +1,5 @@
 ﻿using AuthServer.Core.UnitOfWork;
+using AuthServer.Data.DbContext;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,9 @@ namespace AuthServer.Data.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly IdentityDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public UnitOfWork(IdentityDbContext dbContext)
+        public UnitOfWork(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

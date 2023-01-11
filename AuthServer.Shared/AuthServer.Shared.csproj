@@ -8,4 +8,7 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App"></FrameworkReference>
 	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.25.1" />
+	</ItemGroup>
 </Project>

@@ -3,6 +3,7 @@ using AuthServer.Core.Dtos;
 using AuthServer.Core.Entities;
 using AuthServer.Core.Services;
 using AuthServer.Shared.Configurations;
+using AuthServer.Shared.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -77,7 +78,8 @@ namespace AuthServer.Service.Services
                 issuer: _tokenOption.Issuer, // tokenı yayınlayan
                 expires: accessTokenExpiration, // ne zaman expire olacak
                 notBefore: DateTime.Now, // sadece ilgili aralıkta geçerli olacak. Şimdi - expires süresi boyunca
-                claims: GetClaims(userApp, _tokenOption.Audience), // claimleri ekleniyor
+                //claims: GetClaims(userApp, _tokenOption.Audience), // claimleri ekleniyor
+                audience: _tokenOption.Audience, // claimleri ekleniyor
                 signingCredentials: signingCredentials); // imzamız veriliyor
 
             var handler = new JwtSecurityTokenHandler();

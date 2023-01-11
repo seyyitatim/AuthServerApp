@@ -1,37 +1,39 @@
+using AuthServer.Core.Configuration;
+using AuthServer.Core.Entities;
+using AuthServer.Core.Extensions;
+using AuthServer.Data.DbContext;
 using AuthServer.Service.Registrations;
 using AuthServer.Service.Services;
 using AuthServer.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-var tokenOptions = builder.Configuration.GetSection("TokenOption").Get<CustomTokenOption>();
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<CustomTokenOption>();
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddApplicationService(builder.Configuration);
+builder.Services.AddApplicationService();
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts =>
-{
-    opts.TokenValidationParameters = new TokenValidationParameters()
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), sqlOptions =>
     {
-        ValidIssuer = tokenOptions.Issuer,
-        ValidAudience = tokenOptions.Audience[0],
-        IssuerSigningKey = SignService.GetSymmetricSecurityKey(tokenOptions.SecurityKey),
-
-        ValidateIssuerSigningKey = true,
-        ValidateAudience = true,
-        ValidateIssuer = true,
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
-    };
+        sqlOptions.MigrationsAssembly("AuthServer.Data");
+    });
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
 
+builder.Services.AddIdentity<UserApp, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequireNonAlphanumeric = false;
+}).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
+builder.Services.AddCustomTokenAuth(tokenOptions);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -46,6 +48,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

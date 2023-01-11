@@ -8,7 +8,7 @@ namespace AuthServer.Shared.Configurations
 {
     public class CustomTokenOption
     {
-        public List<string> Audience { get; set; }
+        public string Audience { get; set; }
         public string Issuer { get; set; }
         public int AccessTokenExpiration { get; set; }
         public int RefreshTokenExpiration { get; set; }

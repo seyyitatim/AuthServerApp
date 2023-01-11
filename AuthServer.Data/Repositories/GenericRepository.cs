@@ -1,4 +1,5 @@
 ﻿using AuthServer.Core.Repositories;
+using AuthServer.Data.DbContext;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,10 +13,10 @@ namespace AuthServer.Data.Repositories
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        public IdentityDbContext _dbContext;
+        public AppDbContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public GenericRepository(IdentityDbContext dbContext, DbSet<TEntity> dbSet)
+        public GenericRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.Set<TEntity>();
